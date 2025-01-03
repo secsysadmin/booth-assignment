@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  git-cloner:
+    image: alpine/git
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "git clone git clone https://zach-schrag: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@github.com/zach-schrag/booth-assignment.git /app &&
+      chown -R 1000:1000 /app"
+    volumes:
+      - ./app:/app
+    working_dir: /app
+
+  client:
+    build: ./app/client
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:5000
+    depends_on:
+      - git-cloner
+      - server
+
+  server:
+    build: ./app/server
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - git-cloner
