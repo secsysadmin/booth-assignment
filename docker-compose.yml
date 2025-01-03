@@ -4,7 +4,7 @@ services:
     image: alpine/git
     entrypoint: ["/bin/sh", "-c"]
     command: >
-      "git clone git clone https://zach-schrag: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@github.com/zach-schrag/booth-assignment.git /app &&
+      "git clone https://zach-schrag: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@github.com/zach-schrag/booth-assignment.git /app &&
       chown -R 1000:1000 /app"
     volumes:
       - ./app:/app
