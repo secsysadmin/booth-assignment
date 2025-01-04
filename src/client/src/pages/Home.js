@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import '../styles/Home.css';
+import '../styles/pages/Home.css';
 import Table from '../components/input-table/Table';
-import { validationMap } from "../utils/table-validation";
+import { validateSyntax } from "../utils/table-validation";
 import LogContainer from "../components/logging/LogContainer";
+import { useLog } from '../context/LogContext';
 // import BoothMap from '../components/BoothMap';
 
 function Home() {
+  const { addLog } = useLog();
+
   const [inputs, setInputs] = useState({
     preferenceSheetUrl: '',
     preferenceSheetName: '',
@@ -15,17 +18,9 @@ function Home() {
     outputSheetRange: ''
   });
 
-  const [logs, setLogs] = useState({
-    data: [],
-    showTimestamp: false,
-    verboseMode: false
-  });
-
   const [errors, setErrors] = useState({});
-  // const [sanitizedInputs, setSanitizedInputs] = useState({});
 
-
-  /* Input validation (syntax) */
+  /* Input validation (client-side) */
   /* FIXME: Unable to get live validation to work in tandem with the final validation
   check from the handleAssignBooths callback. So, going to leave this commented
   out for now and only accept validation on the callback so we can continue */
@@ -48,63 +43,16 @@ function Home() {
   };
 
 
-  /* Logging */
-  const handleCheckboxChange = (field) => {
-    setLogs((prevLogs) => ({
-      ...prevLogs,
-      [field]: !prevLogs[field]
-    }));
-  };
-
-  const handleLogClear = () => {
-    setLogs((prevLogs) => ({
-      ...prevLogs,
-      data: []
-    }));
-  };
-
-  const addLog = (severity, message) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setLogs((prevLogs) => ({
-      ...prevLogs,
-      data: [
-        ...prevLogs.data,
-        { severity, message, timestamp },
-        /* Not sure if we want this yet */
-        // ...(severity === 'error' ? [{ severity: 'newline' }] : [])
-      ]
-    }));
-  };
-
-
   /* Assignment entry point */
   const handleAssignBooths = () => {
     addLog("info", "Booth Assignment Initiated");
-    addLog("verbose", "Beginning input validation");
-    const newErrors = {};
-    const sanitizedInputs = {};
 
-    Object.keys(inputs).forEach((field) => {
-      if (validationMap[field]) {
-        const { errorMessage, sanitizedValue } = validationMap[field](inputs[field]);
-        if (errorMessage) {
-          newErrors[field] = errorMessage || '';
-        } else {
-          sanitizedInputs[field.replace("Url", "Id")] = sanitizedValue || null;
-        }
-      }
-    });
+    addLog("verbose", "Beginning input validation...");
+    const { newErrors, sanitizedInputs } = validateSyntax(inputs, addLog);
 
-    // console.log("errors:");
-    // console.log(newErrors);
     setErrors(newErrors);
-    // setSanitizedInputs(newSanitizedInputs);
-    if (Object.keys(newErrors).length !== 0) {
-      addLog("error", "Input syntactically invalid.");
-      return;
-    }
+    if (!sanitizedInputs) return;
 
-    addLog("verbose", "Input syntactically correct.");
     const {
       preferenceSheetId, preferenceSheetName, preferenceSheetRange,
       outputSheetId, outputSheetName, outputSheetRange,
@@ -162,13 +110,7 @@ function Home() {
         </button>
       </div>
 
-      <LogContainer
-        logs={logs.data}
-        verboseMode={logs.verboseMode}
-        showTimestamp={logs.showTimestamp}
-        handleCheckboxChange={handleCheckboxChange}
-        handleLogClear={handleLogClear}
-      />
+      <LogContainer />
     </div >
   );
 }

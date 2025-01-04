@@ -88,11 +88,38 @@ const validateRange = (value) => {
   return { errorMessage: "", sanitizedValue: trimmedValue };
 };
 
-export const validationMap = {
+const validationMap = {
   preferenceSheetUrl: (value) => validateUrl(value, false),
   outputSheetUrl: (value) => validateUrl(value, true),
   preferenceSheetName: validateSheetName,
   outputSheetName: validateSheetName,
   preferenceSheetRange: validateRange,
   outputSheetRange: validateRange,
+};
+
+
+export const validateSyntax = (inputs, addLog) => {
+  addLog("verbose", "Beginning syntax validation");
+
+  const newErrors = {};
+  const sanitizedInputs = {};
+
+  Object.keys(inputs).forEach((field) => {
+    if (validationMap[field]) {
+      const { errorMessage, sanitizedValue } = validationMap[field](inputs[field]);
+      if (errorMessage) {
+        newErrors[field] = errorMessage || '';
+      } else {
+        sanitizedInputs[field.replace("Url", "Id")] = sanitizedValue || null;
+      }
+    }
+  });
+
+  if (Object.keys(newErrors).length !== 0) {
+    addLog("error", "Input syntactically invalid");
+  } else {
+    addLog("verbose", "Input syntactically correct");
+  }
+
+  return { newErrors, sanitizedInputs };
 };
