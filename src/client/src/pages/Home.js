@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import '../styles/Home.css';
 import Table from '../components/input-table/Table';
-import { validationMap, extractSpreadsheetId } from "../utils/table-validation";;
+import { validationMap } from "../utils/table-validation";
+import LogContainer from "../components/logging/LogContainer";
 // import BoothMap from '../components/BoothMap';
 
 function Home() {
@@ -14,9 +15,17 @@ function Home() {
     outputSheetRange: ''
   });
 
+  const [logs, setLogs] = useState({
+    data: [],
+    showTimestamp: false,
+    verboseMode: false
+  });
+
   const [errors, setErrors] = useState({});
+  // const [sanitizedInputs, setSanitizedInputs] = useState({});
 
 
+  /* Input validation (syntax) */
   /* FIXME: Unable to get live validation to work in tandem with the final validation
   check from the handleAssignBooths callback. So, going to leave this commented
   out for now and only accept validation on the callback so we can continue */
@@ -29,7 +38,6 @@ function Home() {
     // }));
   };
 
-  // const [selectedBooths, setSelectedBooths] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -40,29 +48,76 @@ function Home() {
   };
 
 
+  /* Logging */
+  const handleCheckboxChange = (field) => {
+    setLogs((prevLogs) => ({
+      ...prevLogs,
+      [field]: !prevLogs[field]
+    }));
+  };
+
+  const handleLogClear = () => {
+    setLogs((prevLogs) => ({
+      ...prevLogs,
+      data: []
+    }));
+  };
+
+  const addLog = (severity, message) => {
+    const timestamp = new Date().toLocaleTimeString();
+    setLogs((prevLogs) => ({
+      ...prevLogs,
+      data: [
+        ...prevLogs.data,
+        { severity, message, timestamp },
+        /* Not sure if we want this yet */
+        // ...(severity === 'error' ? [{ severity: 'newline' }] : [])
+      ]
+    }));
+  };
+
+
+  /* Assignment entry point */
   const handleAssignBooths = () => {
-    /* Ensure no input table errors exist when button is pushed */
+    addLog("info", "Booth Assignment Initiated");
+    addLog("verbose", "Beginning input validation");
     const newErrors = {};
+    const sanitizedInputs = {};
+
     Object.keys(inputs).forEach((field) => {
-      const errorMessage = validationMap[field] ? validationMap[field](inputs[field]) : '';
-      if (errorMessage) {
-        newErrors[field] = errorMessage;
+      if (validationMap[field]) {
+        const { errorMessage, sanitizedValue } = validationMap[field](inputs[field]);
+        if (errorMessage) {
+          newErrors[field] = errorMessage || '';
+        } else {
+          sanitizedInputs[field.replace("Url", "Id")] = sanitizedValue || null;
+        }
       }
     });
-    setErrors(newErrors);
-    // console.log(newErrors);
 
+    // console.log("errors:");
+    // console.log(newErrors);
+    setErrors(newErrors);
+    // setSanitizedInputs(newSanitizedInputs);
     if (Object.keys(newErrors).length !== 0) {
+      addLog("error", "Input syntactically invalid.");
       return;
     }
 
-    /* Inputs contains the raw but validated input. We to convert the URLs to
-    spreadsheet IDs for the Google Sheets API */
-    const preferenceSheetId = extractSpreadsheetId(inputs.preferenceSheetUrl);
-    const outputSheetId = extractSpreadsheetId(inputs.outputSheetUrl);
+    addLog("verbose", "Input syntactically correct.");
+    const {
+      preferenceSheetId, preferenceSheetName, preferenceSheetRange,
+      outputSheetId, outputSheetName, outputSheetRange,
+    } = sanitizedInputs;
+    // console.log('Sanitized Preference Sheet ID:', preferenceSheetId);
+    // console.log('Sanitized Preference Sheet Name:', preferenceSheetName);
+    // console.log('Sanitized Preference Sheet Range:', preferenceSheetRange);
+    // console.log('Sanitized Output Sheet ID:', outputSheetId);
+    // console.log('Sanitized Output Sheet Name:', outputSheetName);
+    // console.log('Sanitized Output Sheet Range:', outputSheetRange);
 
-    console.log(preferenceSheetId);
-    console.log(outputSheetId);
+    // console.log(preferenceSheetId);
+    // console.log(outputSheetId);
   };
 
   return (
@@ -97,7 +152,7 @@ function Home() {
       {/* <h2 className="mt-4 text-center">Select Booth Map</h2> */}
       {/* <BoothMap selectedBooths={selectedBooths} setSelectedBooths={setSelectedBooths} /> */}
 
-      <div className="d-flex justify-content-center mt-3">
+      <div className="d-flex justify-content-center mt-5">
         <button
           type="button"
           className="btn btn-dark"
@@ -106,6 +161,14 @@ function Home() {
           Assign Booths
         </button>
       </div>
+
+      <LogContainer
+        logs={logs.data}
+        verboseMode={logs.verboseMode}
+        showTimestamp={logs.showTimestamp}
+        handleCheckboxChange={handleCheckboxChange}
+        handleLogClear={handleLogClear}
+      />
     </div >
   );
 }

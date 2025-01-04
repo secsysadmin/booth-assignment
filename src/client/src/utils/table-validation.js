@@ -1,8 +1,8 @@
-/* An empty string indicates no error */
+/* An empty string for errorMessage indicates no error */
 
-export const extractSpreadsheetId = (url) => {
+const extractSpreadsheetId = (url) => {
   if (url === "") {
-    return process.env.REACT_APP_DEFAULT_OUTPUT_SHEET_ID;
+    return process.env.REACT_APP_DEFAULT_OUTPUT_SHEET_ID || null;
   }
 
   const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
@@ -11,59 +11,81 @@ export const extractSpreadsheetId = (url) => {
 };
 
 const validateUrl = (value, allowEmpty = false) => {
-  value = value.trim();
-  if (!value && !allowEmpty) return "This field cannot be empty.";
+  const trimmedValue = value.trim();
+  if (!trimmedValue && !allowEmpty) {
+    return { errorMessage: "This field cannot be empty.", sanitizedValue: null };
+  }
 
-  const sheetId = extractSpreadsheetId(value);
-  if (!sheetId)
-    return "Invalid Spreadsheet URL.";
+  const sheetId = extractSpreadsheetId(trimmedValue);
+  if (!sheetId) {
+    return { errorMessage: "Invalid Spreadsheet URL.", sanitizedValue: null };
+  }
 
-  return "";
+  return { errorMessage: "", sanitizedValue: sheetId };
 };
+
 
 const validateSheetName = (value) => {
   const forbiddenChars = /[/\\?*[\]]/;
 
-  if (value.length > 100)
-    return "Sheet name must be 100 characters or less.";
-  if (forbiddenChars.test(value))
-    return "Sheet name contains invalid characters (/ \\ ? * [ ]).";
-
-  return "";
-};
-
-
-const validateRange = (value) => {
-  value = value.trim();
-  /* No range input -> use the entire sheet */
-  if (value === "") return "";
-
-  const rangeRegex = /^[A-Z]+\d+:[A-Z]+\d+$/;
-  if (!rangeRegex.test(value)) {
-    return 'Invalid range format. Example: "A1:C10"';
+  if (value.length > 100) {
+    return {
+      errorMessage: "Sheet name must be 100 characters or less.",
+      sanitizedValue: null,
+    };
+  }
+  if (forbiddenChars.test(value)) {
+    return {
+      errorMessage: "Sheet name contains invalid characters (/ \\ ? * [ ]).",
+      sanitizedValue: null,
+    };
   }
 
-  const [start, end] = value.split(":");
+  return { errorMessage: "", sanitizedValue: value.trim() };
+};
+
+const validateRange = (value) => {
+  const trimmedValue = value.trim();
+
+  // Allow empty input (entire sheet)
+  if (trimmedValue === "")
+    return { errorMessage: "", sanitizedValue: trimmedValue };
+
+  const rangeRegex = /^[A-Z]+\d+:[A-Z]+\d+$/;
+  if (!rangeRegex.test(trimmedValue)) {
+    return {
+      errorMessage: 'Invalid range format. Example: "A1:C10"',
+      sanitizedValue: null
+    };
+  }
+
   const parseCell = (cell) => {
-    const match = cell.match(/^([A-Z]+)(\d+)$/);
-    return { column: match[1], row: parseInt(match[2], 10) };
+    const [, column, row] = cell.match(/^([A-Z]+)(\d+)$/) || [];
+    return { column, row: parseInt(row, 10) };
   };
 
+  const [start, end] = trimmedValue.split(":");
   const startCell = parseCell(start);
   const endCell = parseCell(end);
 
-  if (startCell.row <= 0 || endCell.row <= 0) {
-    return "Row numbers must be positive integers.";
+  if (!startCell.row || !endCell.row || startCell.row <= 0 || endCell.row <= 0) {
+    return {
+      errorMessage: "Row numbers must be positive integers.",
+      sanitizedValue: null
+    };
   }
 
   if (
     startCell.column > endCell.column ||
     (startCell.column === endCell.column && startCell.row > endCell.row)
   ) {
-    return "Range must be forward (e.g., A1:A4, not A4:A1).";
+    return {
+      errorMessage: "Range must be forward (e.g., A1:A4, not A4:A1).",
+      sanitizedValue: null
+    };
   }
 
-  return "";
+  return { errorMessage: "", sanitizedValue: trimmedValue };
 };
 
 export const validationMap = {

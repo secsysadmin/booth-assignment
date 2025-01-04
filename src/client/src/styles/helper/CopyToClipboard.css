@@ -3,12 +3,6 @@
   position: relative;
 }
 
-.copy-container .text-to-copy {
-  color: inherit;
-  font-size: inherit;
-  pointer-events: none;
-}
-
 .copy-container .confirmation-text {
   margin-left: 4px;
   color: green;

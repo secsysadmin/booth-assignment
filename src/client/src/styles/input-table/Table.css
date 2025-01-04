@@ -1,5 +1,5 @@
 /* Text above the table */
-.text-muted {
+.table-container .text-muted {
   font-size: 0.9rem;
   color: black;
   font-weight: bold;

@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { FaClipboard } from 'react-icons/fa';
 import '../../styles/helper/CopyToClipboard.css';
 
-const CopyToClipboard = ({ textToCopy, iconSize = 20, confirmationText = "Copied!", confirmationDisappears = 15000 }) => {
+const CopyToClipboard = ({
+  textToCopy,
+  iconSize = 20,
+  confirmationText = "Copied!",
+  confirmationDisappears = 15000,
+  iconTitle = "Click to copy"
+}) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (e) => {
@@ -19,11 +25,7 @@ const CopyToClipboard = ({ textToCopy, iconSize = 20, confirmationText = "Copied
 
   return (
     <div className="copy-container">
-      <span className="text-to-copy">
-        {textToCopy}
-      </span>
-
-      <span onClick={handleCopy} className="copy-icon" title="Click to copy">
+      <span onClick={handleCopy} className="copy-icon" title={iconTitle}>
         <FaClipboard size={iconSize} color="#007bff" />
       </span>
 

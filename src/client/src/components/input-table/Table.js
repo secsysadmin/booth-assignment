@@ -16,8 +16,12 @@ function Table({ inputs, handleInputChange, handleBlur, errors }) {
       </p>
       <p className="text-muted">
         Please make sure that both your Preference Spreadsheet and Output Spreadsheet
-        give access to the following email as an <em>editor</em>:
-        <CopyToClipboard textToCopy={process.env.REACT_APP_SHEET_API_EMAIL} />
+        give access to the following email as an <em>editor</em>:<br />
+        {process.env.REACT_APP_SHEET_API_EMAIL}
+        <CopyToClipboard
+          textToCopy={process.env.REACT_APP_SHEET_API_EMAIL}
+          iconTitle="Copy Email"
+        />
       </p>
       <p className="text-muted">
         Placeholder values represent the default values. Leave a cell blank if you wish to use the default value.
