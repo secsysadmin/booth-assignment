@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
 import '../styles/Home.css';
-import InputsTable from '../components/InputsTable';
+import Table from '../components/input-table/Table';
+import { validationMap, extractSpreadsheetId } from "../utils/table-validation";;
 // import BoothMap from '../components/BoothMap';
-
-function extractSpreadsheetId(url) {
-  const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
-}
 
 function Home() {
   const [inputs, setInputs] = useState({
@@ -19,6 +14,21 @@ function Home() {
     outputSheetRange: ''
   });
 
+  const [errors, setErrors] = useState({});
+
+
+  /* FIXME: Unable to get live validation to work in tandem with the final validation
+  check from the handleAssignBooths callback. So, going to leave this commented
+  out for now and only accept validation on the callback so we can continue */
+  const handleBlur = (e) => {
+    // const { name, value } = e.target;
+    // const errorMessage = validationMap[name] ? validationMap[name](value) : "";
+    // setErrors((prevErrors) => ({
+    //   ...prevErrors,
+    //   [name]: errorMessage,
+    // }));
+  };
+
   // const [selectedBooths, setSelectedBooths] = useState([]);
 
   const handleInputChange = (e) => {
@@ -29,26 +39,30 @@ function Home() {
     }));
   };
 
+
   const handleAssignBooths = () => {
-    const inputId = extractSpreadsheetId(inputs.preferenceSheetUrl);
-    if (!inputId) {
-      console.log("in bad");
-      // indicate to user somehow
+    /* Ensure no input table errors exist when button is pushed */
+    const newErrors = {};
+    Object.keys(inputs).forEach((field) => {
+      const errorMessage = validationMap[field] ? validationMap[field](inputs[field]) : '';
+      if (errorMessage) {
+        newErrors[field] = errorMessage;
+      }
+    });
+    setErrors(newErrors);
+    // console.log(newErrors);
+
+    if (Object.keys(newErrors).length !== 0) {
       return;
     }
 
-    console.log(process.env.REACT_APP_DEFAULT_OUTPUT_SHEET_ID);
-    const outputId = inputs.outputSheetUrl === "" ?
-      process.env.REACT_APP_DEFAULT_OUTPUT_SHEET_ID : extractSpreadsheetId(inputs.outputSheetUrl);
-    if (!outputId) {
-      console.log("out bad");
-      // indicate to user somehow
-      return;
-    }
+    /* Inputs contains the raw but validated input. We to convert the URLs to
+    spreadsheet IDs for the Google Sheets API */
+    const preferenceSheetId = extractSpreadsheetId(inputs.preferenceSheetUrl);
+    const outputSheetId = extractSpreadsheetId(inputs.outputSheetUrl);
 
-    console.log(inputId);
-    console.log(outputId);
-
+    console.log(preferenceSheetId);
+    console.log(outputSheetId);
   };
 
   return (
@@ -74,18 +88,25 @@ function Home() {
         </a>
       </nav>
 
-      <InputsTable inputs={inputs} handleInputChange={handleInputChange} />
+      <Table
+        inputs={inputs}
+        handleInputChange={handleInputChange}
+        handleBlur={handleBlur}
+        errors={errors}
+      />
       {/* <h2 className="mt-4 text-center">Select Booth Map</h2> */}
       {/* <BoothMap selectedBooths={selectedBooths} setSelectedBooths={setSelectedBooths} /> */}
 
-      <button
-        type="button"
-        className="btn btn-dark mt-3"
-        onClick={handleAssignBooths}
-      >
-        Assign Booths
-      </button>
-    </div>
+      <div className="d-flex justify-content-center mt-3">
+        <button
+          type="button"
+          className="btn btn-dark"
+          onClick={handleAssignBooths}
+        >
+          Assign Booths
+        </button>
+      </div>
+    </div >
   );
 }
 

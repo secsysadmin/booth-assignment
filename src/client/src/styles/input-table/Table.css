@@ -3,18 +3,31 @@
   font-size: 0.9rem;
   color: black;
   font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Container for the table */
+.table-container {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 /* The table */
 .custom-table {
   border-collapse: collapse;
   border-spacing: 0;
+  max-width: 950px;
+  text-align: center;
+  margin: auto;
+  background-color: #343a40;
 }
+
 
 .custom-table th,
 .custom-table td {
   border: 0;
-  vertical-align: middle; /* Vertically align text in table cells */
+  vertical-align: middle;
   padding: 10px;
   margin: 0;
 }
@@ -31,21 +44,13 @@
 .custom-table tr td:first-child {
   font-weight: bold;
   color: #f8f9fa;
-  text-align: center; /* Center the row header text */
+  text-align: center;
 }
 
 .custom-table input {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  text-align: center; /* Center the text inside the input */
-  padding: 5px; /* Adjust padding for better visual alignment */
+  text-align: center;
+  padding: 5px;
 }
-
-.table {
-  margin: auto;
-  background-color: #212529;
-}
-
-
-
