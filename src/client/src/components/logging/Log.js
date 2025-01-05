@@ -1,10 +1,11 @@
 import React from 'react';
 import "../../styles/logging/Log.css";
 
-const Log = ({ logs, verboseMode, showTimestamp }) => {
+const Log = ({ logs, verboseMode, debugMode, showTimestamp }) => {
   const renderLogMessage = (log, index) => {
-    const { severity, message, timestamp } = log;
+    const { severity, message, timestamp, verbose } = log;
 
+    if (verbose && !verboseMode) return null;
     /* Not sure if we want this yet */
     // if (severity === 'newline') {
     //   return <div key={index} className="log-newline"></div>;
@@ -21,16 +22,16 @@ const Log = ({ logs, verboseMode, showTimestamp }) => {
       case 'info':
         logClass = 'text-info';
         break;
-      case 'verbose':
-        if (!verboseMode) return null;
-        logClass = 'text-muted';
+      case 'debug':
+        if (!debugMode) return null;
+        logClass = 'text-debug';
         break;
       default:
-        logClass = 'text-dark';
+        logClass = 'text-info';
     }
 
     return (
-      <div key={index} className={`log-message ${logClass}`}>
+      <div key={index} className={`log-message ${logClass} ${verbose ? " verbose" : ""}`}>
         {showTimestamp && <span className="log-timestamp">{timestamp}: </span>}
         {message}
       </div>
@@ -39,7 +40,10 @@ const Log = ({ logs, verboseMode, showTimestamp }) => {
 
   return (
     <div className="log-container">
-      {logs.length === 0 ? <div className="no-logs">No logs yet...</div> : logs.map((log, index) => renderLogMessage(log, index))}
+      {logs.length === 0 ?
+        <div className="no-logs">No logs yet...</div>
+        :
+        logs.map((log, index) => renderLogMessage(log, index))}
     </div>
   );
 };

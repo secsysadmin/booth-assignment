@@ -117,7 +117,7 @@ const validationMap = {
 
 
 export const validateSyntax = (inputs, addLog) => {
-  addLog("verbose", "Beginning syntax validation");
+  addLog("info", "Beginning table input syntax validation", true);
 
   const newErrors = {};
   const sanitizedInputs = {};
@@ -134,13 +134,14 @@ export const validateSyntax = (inputs, addLog) => {
   });
 
   if (Object.keys(newErrors).length !== 0) {
-    addLog("error", "Input syntactically invalid");
+    addLog("error", "Table input syntactically invalid");
+    addLog("debug", `newErros: ${JSON.stringify(newErrors)}`);
     return {
       newErrors,
       sanitizedInputs: null,
     };
   }
 
-  addLog("verbose", "Input syntactically correct");
+  addLog("info", "Table input syntactically correct", true);
   return { newErrors, sanitizedInputs };
 };

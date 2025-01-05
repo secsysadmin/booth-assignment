@@ -5,17 +5,18 @@ const LogContext = createContext();
 export const LogProvider = ({ children }) => {
   const [logs, setLogs] = useState({
     data: [],
-    showTimestamp: false,
     verboseMode: false,
+    debugMode: false,
+    showTimestamp: false,
   });
 
-  const addLog = (severity, message) => {
+  const addLog = (severity, message, verbose = false) => {
     const timestamp = new Date().toLocaleTimeString();
     setLogs((prevLogs) => ({
       ...prevLogs,
       data: [
         ...prevLogs.data,
-        { severity, message, timestamp },
+        { severity, message, timestamp, verbose },
       ],
     }));
   };

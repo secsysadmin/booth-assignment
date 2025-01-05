@@ -5,14 +5,22 @@
   border-radius: 16px;
   max-height: 800px;
   overflow-y: auto;
+  overflow-x: hidden,;
   margin-top: 10px;
   margin-bottom: 1px;
   flex-grow: 1;
   font-family: Verdana;
+  word-wrap: break-word;
+  scrollbar-color: #444 #2c3035;
 }
 
 .log-message {
   margin: 5px 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  padding: 2px 4px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .text-danger {
@@ -27,12 +35,12 @@
   color: blue;
 }
 
-.log-container .text-muted {
-  color: gray;
-}
-
 .text-dark {
   color: white;
+}
+
+.text-debug {
+  color: #aaa;
 }
 
 .log-newline {
@@ -43,6 +51,11 @@
   font-weight: bold;
   opacity: 0.8;
 }
+
+/* FIXME: Add an effect to verbose text? */
+/* .verbose {
+  background-color: rgba(255, 255, 255, 0.01);
+} */
 
 .no-logs {
   color: #aaa;

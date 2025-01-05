@@ -45,10 +45,12 @@ function Home() {
 
   /* Assignment entry point */
   const handleAssignBooths = async () => {
-    addLog("info", "Booth Assignment Initiated");
+    addLog("info", "Booth assignment initiated");
+    addLog("debug", `inputs: ${JSON.stringify(inputs)}`);
+    addLog("info", "Beginning table input validation...", true);
 
-    addLog("verbose", "Beginning input validation...");
     const { newErrors, sanitizedInputs } = validateSyntax(inputs, addLog);
+    addLog("debug", `sanitizedInputs: ${JSON.stringify(sanitizedInputs)}`);
 
     setErrors(newErrors);
     if (!sanitizedInputs) return;
