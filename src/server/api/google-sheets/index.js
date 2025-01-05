@@ -33,6 +33,8 @@ async function fetchSpreadsheetMetadata(spreadsheetId) {
       gridProperties: sheet.properties.gridProperties,
     }));
 
+    console.log(metadata);
+
     const sheetNames = metadata.map((sheet) => sheet.title);
 
     return {

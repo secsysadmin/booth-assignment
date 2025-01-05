@@ -58,13 +58,13 @@ function Home() {
     const preferenceQueryString = new URLSearchParams({
       spreadsheetId: sanitizedInputs.preferenceSheetId,
       sheetName: sanitizedInputs.preferenceSheetName,
-      range: sanitizedInputs.preferenceSheetRange,
+      range: sanitizedInputs.preferenceSheetRange ?? "",
     }).toString();
 
     const outputQueryString = new URLSearchParams({
       spreadsheetId: sanitizedInputs.outputSheetId,
       sheetName: sanitizedInputs.outputSheetName,
-      range: sanitizedInputs.outputSheetRange,
+      range: sanitizedInputs.outputSheetRange ?? "",
     }).toString();
 
     const preferenceResponse = await fetch(
