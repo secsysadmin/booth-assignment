@@ -44,7 +44,7 @@ function Home() {
 
 
   /* Assignment entry point */
-  const handleAssignBooths = () => {
+  const handleAssignBooths = async () => {
     addLog("info", "Booth Assignment Initiated");
 
     addLog("verbose", "Beginning input validation...");
@@ -53,20 +53,34 @@ function Home() {
     setErrors(newErrors);
     if (!sanitizedInputs) return;
 
-    const {
-      preferenceSheetId, preferenceSheetName, preferenceSheetRange,
-      outputSheetId, outputSheetName, outputSheetRange,
-    } = sanitizedInputs;
-    // console.log('Sanitized Preference Sheet ID:', preferenceSheetId);
-    // console.log('Sanitized Preference Sheet Name:', preferenceSheetName);
-    // console.log('Sanitized Preference Sheet Range:', preferenceSheetRange);
-    // console.log('Sanitized Output Sheet ID:', outputSheetId);
-    // console.log('Sanitized Output Sheet Name:', outputSheetName);
-    // console.log('Sanitized Output Sheet Range:', outputSheetRange);
+    const preferenceQueryString = new URLSearchParams({
+      spreadsheetId: sanitizedInputs.preferenceSheetId,
+      sheetName: sanitizedInputs.preferenceSheetName,
+      range: sanitizedInputs.preferenceSheetRange,
+    }).toString();
 
-    // console.log(preferenceSheetId);
-    // console.log(outputSheetId);
+    const outputQueryString = new URLSearchParams({
+      spreadsheetId: sanitizedInputs.outputSheetId,
+      sheetName: sanitizedInputs.outputSheetName,
+      range: sanitizedInputs.outputSheetRange,
+    }).toString();
+
+    const preferenceResponse = await fetch(
+      `${process.env.REACT_APP_API_URL}/api/sheets/fetch-spreadsheet?${preferenceQueryString}`
+    );
+
+    const outputResponse = await fetch(
+      `${process.env.REACT_APP_API_URL}/api/sheets/fetch-spreadsheet?${outputQueryString}`
+    );
+
+
+    const preferenceSheet = await preferenceResponse.json();
+    const outputSheet = await outputResponse.json();
+
+    console.log(preferenceSheet);
+    console.log(outputSheet);
   };
+
 
   return (
     <div className="container py-3">

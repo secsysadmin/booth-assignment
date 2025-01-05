@@ -1,17 +1,13 @@
-/*
-require('dotenv').config() must be ran before require('./api/*')
-The APIs require the environment variables to be loaded!
-*/
-require("dotenv").config();
-
 const express = require('express');
+const cors = require("cors");
 const app = express();
-const port = process.env.PORT;
+const sheetsRoutes = require('./routes/sheets');
 
-app.get('/api', (req, res) => {
-  res.send({ message: 'Hello from the backend!' });
+app.use(cors());
+app.use(sheetsRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
-app.listen(port, () => {
-  console.log(`Backend running at http://localhost:${port}`);
-});

@@ -38,9 +38,7 @@ function Table({ inputs, handleInputChange, handleBlur, errors }) {
             </th>
             <th>
               Sheet Name
-              <InfoIcon text='The name of the specific sheet within the spreadsheet.\n\n
-              "The first sheet" is considered the "active" sheet when you first open the
-              spreadsheet. For example, "Sheet1"' />
+              <InfoIcon text='The name of the specific sheet within the spreadsheet.' />
             </th>
             <th>
               Sheet Range
@@ -67,7 +65,6 @@ function Table({ inputs, handleInputChange, handleBlur, errors }) {
               onChange={handleInputChange}
               onBlur={handleBlur}
               error={errors.preferenceSheetName}
-              placeholder="The first sheet"
             />
             <TableCell
               value={inputs.preferenceSheetRange}
@@ -93,7 +90,7 @@ function Table({ inputs, handleInputChange, handleBlur, errors }) {
               onChange={handleInputChange}
               onBlur={handleBlur}
               error={errors.outputSheetName}
-              placeholder="The first sheet"
+              placeholder="Booth Assignments"
             />
             <TableCell
               value={inputs.outputSheetRange}

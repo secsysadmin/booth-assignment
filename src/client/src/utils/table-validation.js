@@ -1,6 +1,7 @@
 /* An empty string for errorMessage indicates no error */
 
 const extractSpreadsheetId = (url) => {
+  // Blank value allowed for output spreadsheet -> default to below
   if (url === "") {
     return process.env.REACT_APP_DEFAULT_OUTPUT_SHEET_ID || null;
   }
@@ -13,35 +14,52 @@ const extractSpreadsheetId = (url) => {
 const validateUrl = (value, allowEmpty = false) => {
   const trimmedValue = value.trim();
   if (!trimmedValue && !allowEmpty) {
-    return { errorMessage: "This field cannot be empty.", sanitizedValue: null };
+    return {
+      errorMessage: "This field cannot be empty.",
+      sanitizedValue: null
+    };
   }
 
   const sheetId = extractSpreadsheetId(trimmedValue);
   if (!sheetId) {
-    return { errorMessage: "Invalid Spreadsheet URL.", sanitizedValue: null };
+    return {
+      errorMessage: "Invalid Spreadsheet URL.",
+      sanitizedValue: null
+    };
   }
 
   return { errorMessage: "", sanitizedValue: sheetId };
 };
 
 
-const validateSheetName = (value) => {
+const validateSheetName = (value, allowEmpty = false) => {
+  const trimmedValue = value.trim();
   const forbiddenChars = /[/\\?*[\]]/;
 
-  if (value.length > 100) {
+  if (!trimmedValue && !allowEmpty) {
+    return {
+      errorMessage: "This field cannot be empty.",
+      sanitizedValue: null
+    };
+  }
+  else if (trimmedValue.length > 100) {
     return {
       errorMessage: "Sheet name must be 100 characters or less.",
       sanitizedValue: null,
     };
   }
-  if (forbiddenChars.test(value)) {
+  else if (forbiddenChars.test(trimmedValue)) {
     return {
       errorMessage: "Sheet name contains invalid characters (/ \\ ? * [ ]).",
       sanitizedValue: null,
     };
   }
 
-  return { errorMessage: "", sanitizedValue: value.trim() };
+  return {
+    errorMessage: "",
+    // Blank value allowed for output sheet -> default to "Booth Assignments"
+    sanitizedValue: trimmedValue ? trimmedValue : "Booth Assignments"
+  };
 };
 
 const validateRange = (value) => {
@@ -91,8 +109,8 @@ const validateRange = (value) => {
 const validationMap = {
   preferenceSheetUrl: (value) => validateUrl(value, false),
   outputSheetUrl: (value) => validateUrl(value, true),
-  preferenceSheetName: validateSheetName,
-  outputSheetName: validateSheetName,
+  preferenceSheetName: (value) => validateSheetName(value, false),
+  outputSheetName: (value) => validateSheetName(value, true),
   preferenceSheetRange: validateRange,
   outputSheetRange: validateRange,
 };
@@ -117,9 +135,12 @@ export const validateSyntax = (inputs, addLog) => {
 
   if (Object.keys(newErrors).length !== 0) {
     addLog("error", "Input syntactically invalid");
-  } else {
-    addLog("verbose", "Input syntactically correct");
+    return {
+      newErrors,
+      sanitizedInputs: null,
+    };
   }
 
+  addLog("verbose", "Input syntactically correct");
   return { newErrors, sanitizedInputs };
 };
