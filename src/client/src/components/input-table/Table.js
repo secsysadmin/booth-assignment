@@ -7,14 +7,14 @@ import CopyToClipboard from '../helper/CopyToClipboard';
 function Table({ inputs, handleInputChange, handleBlur, errors }) {
   return (
     <div className="table-container">
-      <p className="text-muted">
+      <div className="text-muted">
         The only required cell is the Preference Spreadsheet URL.
         By default, the Output Spreadsheet URL is{" "}
         <a href={process.env.REACT_APP_DEFAULT_OUTPUT_SHEET_URL} target="_blank" rel="noopener noreferrer">
           here
         </a>.
-      </p>
-      <p className="text-muted">
+      </div>
+      <div className="text-muted">
         Please make sure that both your Preference Spreadsheet and Output Spreadsheet
         give access to the following email as an <em>editor</em>:<br />
         {process.env.REACT_APP_SHEET_API_EMAIL}
@@ -22,10 +22,10 @@ function Table({ inputs, handleInputChange, handleBlur, errors }) {
           textToCopy={process.env.REACT_APP_SHEET_API_EMAIL}
           iconTitle="Copy Email"
         />
-      </p>
-      <p className="text-muted">
+      </div>
+      <div className="text-muted">
         Placeholder values represent the default values. Leave a cell blank if you wish to use the default value.
-      </p>
+      </div>
 
       <table className="table custom-table bg-dark">
         <thead>
