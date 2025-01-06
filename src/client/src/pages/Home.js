@@ -4,10 +4,12 @@ import Table from '../components/input-table/Table';
 import { validateSyntax } from "../utils/table-validation";
 import LogContainer from "../components/logging/LogContainer";
 import { useLog } from '../context/LogContext';
-// import BoothMap from '../components/BoothMap';
+// import { useBoothMap } from '../context/BoothMapContext';
+import BoothMapContainer from '../components/booth-map/BoothMapContainer';
 
 function Home() {
   const { addLog } = useLog();
+  // const { boothState } = useBoothMap();
 
   const [inputs, setInputs] = useState({
     preferenceSheetUrl: '',
@@ -75,7 +77,6 @@ function Home() {
       `${process.env.REACT_APP_API_URL}/api/sheets/fetch-spreadsheet?${outputQueryString}`
     );
 
-
     const preferenceSheet = await preferenceResponse.json();
     const outputSheet = await outputResponse.json();
 
@@ -85,8 +86,8 @@ function Home() {
 
 
   return (
-    <div className="container py-3">
-      <div className="header text-center mb-3">
+    <div>
+      <div className="header text-center">
         <img
           src="https://sec.tamu.edu/images/secbasic.png"
           alt="SEC"
@@ -107,14 +108,16 @@ function Home() {
         </a>
       </nav>
 
-      <Table
-        inputs={inputs}
-        handleInputChange={handleInputChange}
-        handleBlur={handleBlur}
-        errors={errors}
-      />
-      {/* <h2 className="mt-4 text-center">Select Booth Map</h2> */}
-      {/* <BoothMap selectedBooths={selectedBooths} setSelectedBooths={setSelectedBooths} /> */}
+      <div className="container py-3">
+        <Table
+          inputs={inputs}
+          handleInputChange={handleInputChange}
+          handleBlur={handleBlur}
+          errors={errors}
+        />
+      </div>
+
+      <BoothMapContainer />
 
       <div className="d-flex justify-content-center mt-5">
         <button

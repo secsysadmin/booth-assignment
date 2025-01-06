@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { LogProvider } from './context/LogContext';
+import { BoothMapProvider } from './context/BoothMapContext';
 
 // import './index.css';
 // import reportWebVitals from './reportWebVitals';
@@ -10,7 +11,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <LogProvider>
-      <App />
+      <BoothMapProvider>
+        <App />
+      </BoothMapProvider>
     </LogProvider>
   </React.StrictMode>
 );
