@@ -2,27 +2,28 @@ import React, { createContext, useState, useContext } from "react";
 
 const BoothMapContext = createContext();
 
-
 function generateBoothMap(rows, cols) {
   const columnLetters = Array.from({ length: cols }).map((_, i) => {
     if (i === 0 || i === cols - 1) return String.fromCharCode(65 + Math.ceil(i / 2));
     return String.fromCharCode(65 + Math.floor((i - 1) / 2) + 1);
   }).reverse();
 
-  const generateBoothRows = (numRows, baseOffset) => {
-    return Array.from({ length: numRows }, (_, r) =>
-      Array.from({ length: cols }, (__, c) => {
-        if (!(c & 1) || c === cols - 1) return baseOffset - r;
-        return baseOffset + r + 1;
-      })
-    );
-  };
-
   const topRows = Math.ceil(rows / 2);
   const bottomRows = Math.floor(rows / 2);
 
-  const topBooths = generateBoothRows(topRows, rows);
-  const bottomBooths = generateBoothRows(bottomRows, rows + topRows);
+  const topBooths = Array.from({ length: topRows }, (_, r) =>
+    Array.from({ length: cols }, (__, c) => {
+      if (!(c & 1) || c === cols - 1) return rows - r;
+      return rows + r + 1;
+    })
+  );
+
+  const bottomBooths = Array.from({ length: bottomRows }, (_, r) =>
+    Array.from({ length: cols }, (__, c) => {
+      if (!(c & 1) || c === cols - 1) return bottomRows - r;
+      return rows + topRows + r + 1;
+    })
+  );
 
   return { columnLetters, topBooths, bottomBooths };
 }
