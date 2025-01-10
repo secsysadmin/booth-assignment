@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require("cors");
-const app = express();
 const sheetsRoutes = require('./routes/sheets');
 
+const app = express();
 app.use(cors());
 app.use(sheetsRoutes);
 
