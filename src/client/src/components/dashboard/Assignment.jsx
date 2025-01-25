@@ -2786,13 +2786,13 @@ const Assignment = () => {
 			return Object.keys(counts).filter((key) => counts[key] !== 1);
 		};
 
-		// const uniqueTest = flattenAndExtract(assignments);
-		// console.log(uniqueTest);
+		const uniqueTest = flattenAndExtract(assignments);
+		console.log(uniqueTest);
 
-		// const dupes = isUnique(uniqueTest);
-		// console.log(dupes);
+		const dupes = isUnique(uniqueTest);
+		console.log(dupes);
 
-		await writeToSheet(sanitizedInputs, assignments);
+		// await writeToSheet(sanitizedInputs, assignments);
 	};
 
 	return (
