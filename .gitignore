@@ -1,5 +1,4 @@
 # .gitignore
-googleAPI.json
 
 # Build files
 dist/
